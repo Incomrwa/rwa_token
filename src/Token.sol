@@ -1,27 +1,23 @@
 // SPDX-License-Identifier: MIT
-// Compatible with OpenZeppelin Contracts ^5.0.0
 pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20BurnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20PermitUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract Token is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, ERC20PermitUpgradeable {
-    /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() {
-        _disableInitializers();
+contract Token is ERC20, ERC20Burnable, ERC20Permit, Ownable {
+
+    constructor(
+        string memory name_,
+        string memory symbol_,
+        uint256 initialSupply_
+    ) ERC20(name_, symbol_) ERC20Permit(name_) Ownable(msg.sender) {
+        _mint(msg.sender, initialSupply_);
     }
 
-    function initialize(string memory _name, string memory _symbol, uint256 _initialSupply) public initializer {
-        __ERC20_init(_name, _symbol);
-        __ERC20Burnable_init();
-        __ERC20Permit_init(_name);
-
-        _mint(msg.sender, _initialSupply);
-    }
-
-    function version() public pure virtual returns (string memory) {
+    /// @notice Version info
+    function version() external pure virtual returns (string memory) {
         return "1.0.0";
     }
 }

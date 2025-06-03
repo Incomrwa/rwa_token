@@ -1,10 +1,9 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.20;
 
 import {Test, console2} from "forge-std/Test.sol";
 import {Token} from "../src/Token.sol";
 import {Vesting} from "../src/Vesting.sol";
-import {Upgrades} from "openzeppelin-foundry-upgrades/Upgrades.sol";
 
 contract VestingTest is Test {
     Token public token;
@@ -22,11 +21,7 @@ contract VestingTest is Test {
         deployer = msg.sender;
 
         vm.startPrank(deployer);
-        token = Token(
-            Upgrades.deployTransparentProxy(
-                "Token.sol", deployer, abi.encodeCall(Token.initialize, ("Nexade", "NEXD", 1_000_000_000 ether))
-            )
-        );
+        token = new Token("Nexade", "NEXD", 1_000_000_000 ether);
 
         vesting = new Vesting(beneficiary, startTimestamp, totalDuration, cliffDuration);
 
@@ -58,7 +53,6 @@ contract VestingTest is Test {
 
         vesting.release(address(token)); // try to release the tokens before cliff
         assertEq(token.balanceOf(beneficiary), 0); // nothing in beneficiary wallet yet
-
 
         // advance time to 3 months - has not passed cliff yet
         vm.warp(block.timestamp + 3 * 30 days);

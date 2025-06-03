@@ -1,11 +1,11 @@
 ## Nexade Token
 
 Contracts:
-- `Token.sol`: upgradeable ERC20 token with transparent proxy.
+- `Token.sol`:  ERC20 token with out proxy.
 - `Vesting.sol`: vesting wallet with cliff.
 
 Scripts:
-- `Token.s`: to deploy and/or upgrade the token
+- `Token.s`: to deploy the token
 - `Vesting.s`: to deploy vesting with cliff
 
 Tokenomics: 

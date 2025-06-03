@@ -1,0 +1,82 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+import "forge-std/Script.sol";
+import "../src/Token.sol";
+
+// Interface to create standard L2 tokens
+interface IL2StandardTokenFactory {
+    function createStandardL2Token(
+        address l1Token,
+        string calldata name,
+        string calldata symbol
+    ) external returns (address);
+}
+
+// Interface to deposit L1 tokens to L2
+interface IL1StandardBridge {
+    function depositERC20To(
+        address l1Token,
+        address l2Token,
+        address to,
+        uint256 amount,
+        uint32 l2Gas,
+        bytes calldata data
+    ) external;
+}
+
+// Deploys a new L2 token mapped to the L1 token
+// forge clean && forge script script/DeployAndBridge.s.sol:DeployL2 --rpc-url $BASE_PSEPOLIA_RPC --broadcast -vvvvv
+contract DeployL2 is Script {
+    address public constant L2_STANDARD_FACTORY = 0x4200000000000000000000000000000000000012;
+    string public constant NAME = "INCOM Testnet token";
+    string public constant SYMBOL = "INCOM_TN";
+
+    function run() external {
+        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+        address l1Token = vm.envAddress("L1_TOKEN");
+
+        vm.startBroadcast(deployerPrivateKey);
+
+        IL2StandardTokenFactory factory = IL2StandardTokenFactory(L2_STANDARD_FACTORY);
+        address l2Token = factory.createStandardL2Token(l1Token, NAME, SYMBOL);
+
+        console2.log("L2 token deployed at:", l2Token);
+
+        vm.stopBroadcast();
+    }
+}
+
+// Bridges tokens from L1 to L2
+//forge clean && forge script script/DeployAndBridge.s.sol:BridgeToBase --rpc-url $BASE_PSEPOLIA_RPC --broadcast -vvvvv
+contract BridgeToBase is Script {
+    address public constant L1_STANDARD_BRIDGE = 0xfd0Bf71F60660E2f608ed56e1659C450eB113120;
+
+    function run() external {
+        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+        address l1Token = vm.envAddress("L1_TOKEN");
+        address l2Token = vm.envAddress("L2_TOKEN");
+        uint256 bridgeAmount = vm.envUint("TOKEN_AMOUNT"); // Already in wei
+
+        vm.startBroadcast(deployerPrivateKey);
+
+        // Approve bridge contract to transfer tokens
+        Token token = Token(l1Token);
+        token.approve(L1_STANDARD_BRIDGE, bridgeAmount);
+
+        // Bridge tokens
+        IL1StandardBridge bridge = IL1StandardBridge(L1_STANDARD_BRIDGE);
+        bridge.depositERC20To(
+            l1Token,
+            l2Token,
+            vm.addr(deployerPrivateKey),
+            bridgeAmount,
+            100_000, // l2Gas
+            ""       // calldata
+        );
+
+        console2.log("Bridged", bridgeAmount, "tokens to L2");
+
+        vm.stopBroadcast();
+    }
+}
