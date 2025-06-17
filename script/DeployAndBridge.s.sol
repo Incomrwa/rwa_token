@@ -28,17 +28,18 @@ interface IL1StandardBridge {
 // Deploys a new L2 token mapped to the L1 token
 // forge clean && forge script script/DeployAndBridge.s.sol:DeployL2 --rpc-url $BASE_PSEPOLIA_RPC --broadcast -vvvvv
 contract DeployL2 is Script {
-    address public constant L2_STANDARD_FACTORY = 0x4200000000000000000000000000000000000012;
-    string public constant NAME = "INCOM Testnet token";
-    string public constant SYMBOL = "INCOM_TN";
+    string public constant NAME = "Nexade INCM Token";
+    string public constant SYMBOL = "INCM";
 
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         address l1Token = vm.envAddress("L1_TOKEN");
+        address l2StandardTokenFactoryAddress = vm.envAddress("L2_STANDARD_FACTORY");
+
 
         vm.startBroadcast(deployerPrivateKey);
 
-        IL2StandardTokenFactory factory = IL2StandardTokenFactory(L2_STANDARD_FACTORY);
+        IL2StandardTokenFactory factory = IL2StandardTokenFactory(l2StandardTokenFactoryAddress);
         address l2Token = factory.createStandardL2Token(l1Token, NAME, SYMBOL);
 
         console2.log("L2 token deployed at:", l2Token);
@@ -50,9 +51,9 @@ contract DeployL2 is Script {
 // Bridges tokens from L1 to L2
 //forge clean && forge script script/DeployAndBridge.s.sol:BridgeToBase --rpc-url $BASE_PSEPOLIA_RPC --broadcast -vvvvv
 contract BridgeToBase is Script {
-    address public constant L1_STANDARD_BRIDGE = 0xfd0Bf71F60660E2f608ed56e1659C450eB113120;
 
     function run() external {
+        address l1StandardBridgeAddress = vm.envAddress("L1_STANDARD_BRIDGE");
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         address l1Token = vm.envAddress("L1_TOKEN");
         address l2Token = vm.envAddress("L2_TOKEN");
@@ -62,10 +63,10 @@ contract BridgeToBase is Script {
 
         // Approve bridge contract to transfer tokens
         Token token = Token(l1Token);
-        token.approve(L1_STANDARD_BRIDGE, bridgeAmount);
+        token.approve(l1StandardBridgeAddress, bridgeAmount);
 
         // Bridge tokens
-        IL1StandardBridge bridge = IL1StandardBridge(L1_STANDARD_BRIDGE);
+        IL1StandardBridge bridge = IL1StandardBridge(l1StandardBridgeAddress);
         bridge.depositERC20To(
             l1Token,
             l2Token,

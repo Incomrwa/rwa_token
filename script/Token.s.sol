@@ -6,8 +6,8 @@ import {Token} from "../src/Token.sol";
 
 contract Deploy is Script {
     Token public token;
-    string public constant NAME = "INCOM Testnet token";
-    string public constant SYMBOL = "INCOM_TN";
+    string public constant NAME = "Nexade INCM Token";
+    string public constant SYMBOL = "INCM";
     uint256 public constant INITIAL_SUPPLY = 1_000_000_000 ether;
 
     function run() public {
