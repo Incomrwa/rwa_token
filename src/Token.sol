@@ -27,13 +27,21 @@ contract Token is ERC20, ERC20Burnable, ERC20Permit, ERC20Votes, Ownable {
     }
 
     // Override nonces  to handle both ERC20 and ERC20Votes nonces
-        function nonces(address owner)
+    function nonces(address owner)
         public
         view
         override(ERC20Permit, Nonces)
         returns (uint256)
     {
         return super.nonces(owner);
+    }
+    // Overrides IERC6372 functions to make the token & governor timestamp-based
+    function clock() public view override returns (uint48) {
+        return uint48(block.timestamp);
+    }
+    // solhint-disable-next-line func-name-mixedcase
+    function CLOCK_MODE() public pure override returns (string memory) {
+        return "mode=timestamp";
     }
 
     /// @notice Version info
