@@ -28,8 +28,8 @@ interface IL1StandardBridge {
 // Deploys a new L2 token mapped to the L1 token
 // forge clean && forge script script/DeployAndBridge.s.sol:DeployL2 --rpc-url $BASE_PSEPOLIA_RPC --broadcast -vvvvv
 contract DeployL2 is Script {
-    string public constant NAME = "Nexade INCM Token";
-    string public constant SYMBOL = "INCM";
+    string public constant NAME = "IncomRWA";
+    string public constant SYMBOL = "iRWA";
 
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");

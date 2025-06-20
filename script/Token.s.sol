@@ -6,9 +6,9 @@ import {Token} from "../src/Token.sol";
 
 contract Deploy is Script {
     Token public token;
-    string public constant NAME = "Nexade INCM Token";
-    string public constant SYMBOL = "INCM";
-    uint256 public constant INITIAL_SUPPLY = 1_000_000_000 ether;
+    string public constant NAME = "IncomRWA";
+    string public constant SYMBOL = "iRWA";
+    uint256 public constant INITIAL_SUPPLY = 100_000_000 ether;
 
     function run() public {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
