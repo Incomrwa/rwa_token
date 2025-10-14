@@ -1,4 +1,4 @@
-## Nexade Token
+## IncomRWA Token
 
 Contracts:
 - `Token.sol`:  ERC20 token with out proxy.
