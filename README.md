@@ -9,9 +9,9 @@ Scripts:
 - `Vesting.s`: to deploy vesting with cliff
 
 Tokenomics: 
-- Name: Nexade
-- Symbol: NEXD 
-- Initial Supply: 1 billion NEXD Tokens
+- Name: IncomRWA
+- Symbol: iRWA 
+- Initial Supply: 100 Million iRWA Tokens
 
 ## Dependencies
 
